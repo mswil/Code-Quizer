@@ -34,7 +34,7 @@ const createQuestionEl = function (question) {
 
     questionDiv.appendChild(questionEl);
 
-    //TODO make display in random order
+    //create a button for each choice
     for (let i = 0; i < question.choices.length; i++) {
         const choiceEl = createChoiceEl(question.choices[i], i);
         questionDiv.appendChild(choiceEl);
@@ -46,46 +46,60 @@ const createQuestionEl = function (question) {
 const createChoiceEl = function (choice, choiceIndex) {
     const choiceEl = document.createElement("button");
     choiceEl.setAttribute("type", "button");
-    choiceEl.setAttribute("data-choice-index", choiceIndex);
     choiceEl.textContent = choice;
+
+    //Keep track of what index this choice is so we can compare to the answerIndex later
+    choiceEl.setAttribute("data-choice-index", choiceIndex);
+
     choiceEl.addEventListener("click", selectedChoice);
+
     return choiceEl;
 };
 
 const startGame = function () {
     console.log("game started");
+    //hide instructions
     startView.style.display = "none";
+
+    //ask first question
     const questionEl = createQuestionEl(questions[currentQuestion]);
     mainEl.appendChild(questionEl);
 
 };
 
 const selectedChoice = function (event) {
+
     const choiceIndex = +event.target.getAttribute("data-choice-index");
+
     if (choiceIndex === questions[currentQuestion].answerIndex) {
-        //correct conditions
         console.log("good job");
+        //TODO add to score
+        //TODO display correct
     }
     else {
-        //wrong conditions
         console.log("try harder next time");
+        //TODO subtract from time
+        //TODO display wrong
     }
-    //where we goin?
-    nextAction();
+
+    nextScreen();
 };
 
-const nextAction = function () {
+const nextScreen = function () {
 
     currentQuestion++;
 
+    //end game if we are out of questions
     if (!questions[currentQuestion]) {
         console.log("END GAME");
         endGame();
         return;
     }
+    //get rid of old question
     const oldQuestion = document.querySelector("#question");
     oldQuestion.remove();
 
+    //ask next question
     const newQuestion = createQuestionEl(questions[currentQuestion]);
     mainEl.appendChild(newQuestion);
 
@@ -93,5 +107,3 @@ const nextAction = function () {
 
 startBtn.addEventListener("click", startGame);
 
-
-//event.target thing for when user selects choice
