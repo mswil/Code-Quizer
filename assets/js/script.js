@@ -35,6 +35,42 @@ let currentQuestion = -1;
 
 let userScore = 0;
 
+const startGame = function () {
+    console.log("game started");
+
+    //initialize score to 0
+    userScore = 0;
+
+    //hide instructions
+    startView.classList.add("hidden");
+
+    //ask first question
+    nextScreen();
+};
+
+const nextScreen = function () {
+
+    //get rid of old question
+    const oldQuestion = document.querySelector("#question");
+
+    if (oldQuestion) {
+        oldQuestion.remove();
+    }
+
+    currentQuestion++;
+    //end game if we are out of questions
+    if (!questions[currentQuestion]) {
+        console.log("END GAME");
+        endGame();
+        return;
+    }
+
+    //ask next question
+    const newQuestion = createQuestionEl(questions[currentQuestion]);
+    mainEl.appendChild(newQuestion);
+
+};
+
 const createQuestionEl = function (question) {
 
     //create div for question
@@ -69,19 +105,6 @@ const createChoiceEl = function (choice, choiceIndex) {
     return choiceEl;
 };
 
-const startGame = function () {
-    console.log("game started");
-
-    //initialize score to 0
-    userScore = 0;
-
-    //hide instructions
-    startView.classList.add("hidden");
-
-    //ask first question
-    nextScreen();
-};
-
 const selectedChoice = function (event) {
 
     const choiceIndex = +event.target.getAttribute("data-choice-index");
@@ -101,34 +124,28 @@ const selectedChoice = function (event) {
     nextScreen();
 };
 
-const nextScreen = function () {
-
-    //get rid of old question
-    const oldQuestion = document.querySelector("#question");
-
-    if (oldQuestion) {
-        oldQuestion.remove();
-    }
-
-    currentQuestion++;
-    //end game if we are out of questions
-    if (!questions[currentQuestion]) {
-        console.log("END GAME");
-        endGame();
-        return;
-    }
-    
-    //ask next question
-    const newQuestion = createQuestionEl(questions[currentQuestion]);
-    mainEl.appendChild(newQuestion);
-    
-};
-
 const endGame = function () {
     //TODO stop countdown if haven't already
     endView.classList.remove("hidden");
     userScoreEl.textContent = userScore;
 
+};
+
+const submitScore = function () {
+    saveScore();
+    showHighScores();
+};
+
+const saveScore = function () {
+    let highScores = loadScores();
+    const scoreObj = {
+        name: userInitials.value,
+        score: userScore
+    };
+
+    highScores.push(scoreObj);
+    localStorage.setItem("highScores", JSON.stringify(highScores));
+    highScores = [];
 };
 
 const loadScores = function () {
@@ -141,22 +158,6 @@ const loadScores = function () {
     return JSON.parse(savedHighScores);
 };
 
-const saveScore = function () {
-    let highScores = loadScores();
-    const scoreObj = {
-        name: userInitials.value,
-        score: userScore
-    };
-
-    highScores.push(scoreObj);
-    localStorage.setItem("highScores", JSON.stringify(highScores));
-};
-
-const submitScore = function () {
-    saveScore();
-    showHighScores();
-};
-
 const showHighScores = function () {
     endView.classList.add("hidden");
     highScoreView.classList.remove("hidden");
@@ -164,7 +165,7 @@ const showHighScores = function () {
     let highScores = loadScores();
 
     highScores.sort(function (a, b) {
-        return a.score - b.score;
+        return b.score - a.score;
     });
 
     for (let i = 0; i < Math.min(highScores.length, 10); i++) {
@@ -175,6 +176,23 @@ const showHighScores = function () {
     }
 };
 
+const restartGame = function () {
+    highScoreView.classList.add("hidden");
+    startView.classList.remove("hidden");
+
+    highScoreListEl.innerHTML = "";
+
+    userScore = 0;
+    currentQuestion = -1;
+
+};
+
+const clearScore = function () {
+    localStorage.clear();
+};
+
 startBtn.addEventListener("click", startGame);
 initialsBtn.addEventListener("click", submitScore);
+restartBtn.addEventListener("click", restartGame);
+clearScoreBtn.addEventListener("click", clearScore);
 
