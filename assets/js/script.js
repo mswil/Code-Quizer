@@ -1,6 +1,16 @@
 const mainEl = document.querySelector("main");
-const startBtn = document.querySelector("#start-btn");
+
 const startView = document.querySelector("#start-view");
+const startBtn = document.querySelector("#start-btn");
+
+const endView = document.querySelector("#end-view");
+const userScore = document.querySelector("#user-score")
+const initialsBtn = document.querySelector("#initials-btn");
+
+const highScoreView = document.querySelector("#high-score-view");
+const highScoreListEl = document.querySelector("#high-score-list");
+const restartBtn = document.querySelector("#restart");
+const clearScoreBtn = document.querySelector("#clear-scores");
 
 const questions = [
     {
@@ -21,6 +31,8 @@ const questions = [
 ];
 
 let currentQuestion = 0;
+
+let score = 0;
 
 const createQuestionEl = function (question) {
 
@@ -58,13 +70,15 @@ const createChoiceEl = function (choice, choiceIndex) {
 
 const startGame = function () {
     console.log("game started");
+
+    //initialize score to 0
+    score = 0;
+
     //hide instructions
-    startView.style.display = "none";
+    startView.classList.add("hidden");
 
     //ask first question
-    const questionEl = createQuestionEl(questions[currentQuestion]);
-    mainEl.appendChild(questionEl);
-
+    nextScreen();
 };
 
 const selectedChoice = function (event) {
@@ -73,7 +87,8 @@ const selectedChoice = function (event) {
 
     if (choiceIndex === questions[currentQuestion].answerIndex) {
         console.log("good job");
-        //TODO add to score
+        //add 10 points to score
+        score += 10;
         //TODO display correct
     }
     else {
@@ -87,7 +102,12 @@ const selectedChoice = function (event) {
 
 const nextScreen = function () {
 
-    currentQuestion++;
+    //get rid of old question
+    const oldQuestion = document.querySelector("#question");
+
+    if (oldQuestion) {
+        oldQuestion.remove();
+    }
 
     //end game if we are out of questions
     if (!questions[currentQuestion]) {
@@ -95,15 +115,28 @@ const nextScreen = function () {
         endGame();
         return;
     }
-    //get rid of old question
-    const oldQuestion = document.querySelector("#question");
-    oldQuestion.remove();
 
     //ask next question
     const newQuestion = createQuestionEl(questions[currentQuestion]);
     mainEl.appendChild(newQuestion);
 
+    currentQuestion++;
+};
+
+const endGame = function () {
+    //TODO stop countdown if haven't already
+    endView.classList.remove("hidden");
+    userScore.textContent = score;
+
+};
+
+const showHighScores = function () {
+    endView.classList.add("hidden");
+    highScoreView.classList.remove("hidden");
+
+
 };
 
 startBtn.addEventListener("click", startGame);
+initialsBtn.addEventListener("click", showHighScores);
 

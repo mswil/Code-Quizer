@@ -23,6 +23,26 @@
                 answers will penalize your score/time by 10 seconds!</p>
             <button type="button" id="start-btn">Start Quiz</button>
         </div>
+
+        <div id="end-view" class="hidden">
+            <h1>All done!</h1>
+            <h2>Your final score is <span id="user-score"></span></h2>
+
+            <label for="initials">Enter initials: </label>
+            <textarea id="initials" name="initials"></textarea>
+            <button type="button" id="initials-btn">Submit</button>
+        </div>
+
+        <div id="high-score-view" class="hidden">
+            <h1>High Scores</h1>
+
+            <ol id="high-score-list">
+
+            </ol>
+            
+            <button type="button" id="restart">Go back</button>
+            <button type="button" id="clear-scores">Clear high scores</button>
+        </div>
     </main>
 
     <script src="./assets/js/script.js"></script>
@@ -30,7 +50,8 @@
 
 </html>
 
-<!-- <div>
+<!--question layout 
+    <div>
     <h1>question 1</h1>
     <button type="button">choice 1</button>
     <button type="button">choice 2</button>
