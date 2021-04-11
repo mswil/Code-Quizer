@@ -26,6 +26,7 @@ const createQuestionEl = function (question) {
 
     //create div for question
     const questionDiv = document.createElement("div");
+    questionDiv.setAttribute("id", "question")
 
     //create h1 which will contain the question
     const questionEl = document.createElement("h1");
@@ -54,7 +55,7 @@ const createChoiceEl = function (choice, choiceIndex) {
 const startGame = function () {
     console.log("game started");
     startView.style.display = "none";
-    const questionEl = createQuestionEl(questions[0]);
+    const questionEl = createQuestionEl(questions[currentQuestion]);
     mainEl.appendChild(questionEl);
 
 };
@@ -69,6 +70,25 @@ const selectedChoice = function (event) {
         //wrong conditions
         console.log("try harder next time");
     }
+    //where we goin?
+    nextAction();
+};
+
+const nextAction = function () {
+
+    currentQuestion++;
+
+    if (!questions[currentQuestion]) {
+        console.log("END GAME");
+        endGame();
+        return;
+    }
+    const oldQuestion = document.querySelector("#question");
+    oldQuestion.remove();
+
+    const newQuestion = createQuestionEl(questions[currentQuestion]);
+    mainEl.appendChild(newQuestion);
+
 };
 
 startBtn.addEventListener("click", startGame);
