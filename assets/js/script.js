@@ -20,6 +20,8 @@ const questions = [
     }
 ];
 
+let currentQuestion = 0;
+
 const createQuestionEl = function (question) {
 
     //create div for question
@@ -45,10 +47,11 @@ const createChoiceEl = function (choice, choiceIndex) {
     choiceEl.setAttribute("type", "button");
     choiceEl.setAttribute("data-choice-index", choiceIndex);
     choiceEl.textContent = choice;
+    choiceEl.addEventListener("click", selectedChoice);
     return choiceEl;
 };
 
-const startGame = function() {
+const startGame = function () {
     console.log("game started");
     startView.style.display = "none";
     const questionEl = createQuestionEl(questions[0]);
@@ -56,4 +59,19 @@ const startGame = function() {
 
 };
 
+const selectedChoice = function (event) {
+    const choiceIndex = +event.target.getAttribute("data-choice-index");
+    if (choiceIndex === questions[currentQuestion].answerIndex) {
+        //correct conditions
+        console.log("good job");
+    }
+    else {
+        //wrong conditions
+        console.log("try harder next time");
+    }
+};
+
 startBtn.addEventListener("click", startGame);
+
+
+//event.target thing for when user selects choice
