@@ -4,7 +4,8 @@ const startView = document.querySelector("#start-view");
 const startBtn = document.querySelector("#start-btn");
 
 const endView = document.querySelector("#end-view");
-const userScore = document.querySelector("#user-score")
+const userScoreEl = document.querySelector("#user-score")
+const userInitials = document.querySelector("#initials");
 const initialsBtn = document.querySelector("#initials-btn");
 
 const highScoreView = document.querySelector("#high-score-view");
@@ -30,9 +31,9 @@ const questions = [
     }
 ];
 
-let currentQuestion = 0;
+let currentQuestion = -1;
 
-let score = 0;
+let userScore = 0;
 
 const createQuestionEl = function (question) {
 
@@ -72,7 +73,7 @@ const startGame = function () {
     console.log("game started");
 
     //initialize score to 0
-    score = 0;
+    userScore = 0;
 
     //hide instructions
     startView.classList.add("hidden");
@@ -88,7 +89,7 @@ const selectedChoice = function (event) {
     if (choiceIndex === questions[currentQuestion].answerIndex) {
         console.log("good job");
         //add 10 points to score
-        score += 10;
+        userScore += 10;
         //TODO display correct
     }
     else {
@@ -109,34 +110,71 @@ const nextScreen = function () {
         oldQuestion.remove();
     }
 
+    currentQuestion++;
     //end game if we are out of questions
     if (!questions[currentQuestion]) {
         console.log("END GAME");
         endGame();
         return;
     }
-
+    
     //ask next question
     const newQuestion = createQuestionEl(questions[currentQuestion]);
     mainEl.appendChild(newQuestion);
-
-    currentQuestion++;
+    
 };
 
 const endGame = function () {
     //TODO stop countdown if haven't already
     endView.classList.remove("hidden");
-    userScore.textContent = score;
+    userScoreEl.textContent = userScore;
 
+};
+
+const loadScores = function () {
+    let savedHighScores = localStorage.getItem("highScores");
+
+    if (!savedHighScores) {
+        return [];
+    }
+
+    return JSON.parse(savedHighScores);
+};
+
+const saveScore = function () {
+    let highScores = loadScores();
+    const scoreObj = {
+        name: userInitials.value,
+        score: userScore
+    };
+
+    highScores.push(scoreObj);
+    localStorage.setItem("highScores", JSON.stringify(highScores));
+};
+
+const submitScore = function () {
+    saveScore();
+    showHighScores();
 };
 
 const showHighScores = function () {
     endView.classList.add("hidden");
     highScoreView.classList.remove("hidden");
 
+    let highScores = loadScores();
 
+    highScores.sort(function (a, b) {
+        return a.score - b.score;
+    });
+
+    for (let i = 0; i < Math.min(highScores.length, 10); i++) {
+        const scoreEl = document.createElement("li");
+        scoreEl.textContent = highScores[i].name + " - " + highScores[i].score;
+
+        highScoreListEl.appendChild(scoreEl);
+    }
 };
 
 startBtn.addEventListener("click", startGame);
-initialsBtn.addEventListener("click", showHighScores);
+initialsBtn.addEventListener("click", submitScore);
 
