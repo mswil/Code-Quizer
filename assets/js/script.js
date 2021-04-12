@@ -1,4 +1,7 @@
 const mainEl = document.querySelector("main");
+const headerEl = document.querySelector("header");
+
+const highScoreBtn = document.querySelector("#high-score-btn");
 
 const startView = document.querySelector("#start-view");
 const startBtn = document.querySelector("#start-btn");
@@ -10,8 +13,12 @@ const initialsBtn = document.querySelector("#initials-btn");
 
 const highScoreView = document.querySelector("#high-score-view");
 const highScoreListEl = document.querySelector("#high-score-list");
-const restartBtn = document.querySelector("#restart");
+const goBackBtn = document.querySelector("#restart");
 const clearScoreBtn = document.querySelector("#clear-scores");
+
+console.log("created query selectors");
+
+let lastViewedScreen = "start";
 
 const questions = [
     {
@@ -41,6 +48,8 @@ const startGame = function () {
     //initialize score to 0
     userScore = 0;
 
+    currentQuestion = -1;
+
     //hide instructions
     startView.classList.add("hidden");
 
@@ -49,6 +58,9 @@ const startGame = function () {
 };
 
 const nextScreen = function () {
+    console.log("next screen");
+
+    lastViewedScreen = "question";
 
     //get rid of old question
     const oldQuestion = document.querySelector("#question");
@@ -106,6 +118,7 @@ const createChoiceEl = function (choice, choiceIndex) {
 };
 
 const selectedChoice = function (event) {
+    console.log("user chose" + event);
 
     const choiceIndex = +event.target.getAttribute("data-choice-index");
 
@@ -125,9 +138,13 @@ const selectedChoice = function (event) {
 };
 
 const endGame = function () {
+    console.log("the game has ended");
     //TODO stop countdown if haven't already
     endView.classList.remove("hidden");
+    headerEl.classList.add("invisable");
     userScoreEl.textContent = userScore;
+
+    lastViewedScreen = "end";
 
 };
 
@@ -159,7 +176,26 @@ const loadScores = function () {
 };
 
 const showHighScores = function () {
-    endView.classList.add("hidden");
+
+    //which screen are we hiding
+    switch (lastViewedScreen) {
+        case "end":
+            endView.classList.add("hidden");
+            headerEl.classList.remove("invisable");
+            break;
+        case "start":
+            startView.classList.add("hidden");
+            break;
+        case "question":
+            //hide question
+            const questionView = document.querySelector("#question");
+            questionView.classList.add("hidden");
+            //pause timer
+            break;
+        default:
+    }
+
+    headerEl.classList.add("invisable");
     highScoreView.classList.remove("hidden");
 
     let highScores = loadScores();
@@ -168,6 +204,7 @@ const showHighScores = function () {
         return b.score - a.score;
     });
 
+    //display at most the top 10 high scores
     for (let i = 0; i < Math.min(highScores.length, 10); i++) {
         const scoreEl = document.createElement("li");
         scoreEl.textContent = highScores[i].name + " - " + highScores[i].score;
@@ -176,23 +213,45 @@ const showHighScores = function () {
     }
 };
 
-const restartGame = function () {
-    highScoreView.classList.add("hidden");
-    startView.classList.remove("hidden");
+const goBack = function () {
 
     highScoreListEl.innerHTML = "";
+    highScoreView.classList.add("hidden");
+    headerEl.classList.remove("invisable");
 
-    userScore = 0;
-    currentQuestion = -1;
 
+    //really only care if we came from question, otherwise go to start
+    //which screen are we returning to
+    switch (lastViewedScreen) {
+        case "end":
+            //go to start screen
+            startView.classList.remove("hidden");
+            lastViewedScreen = "start";
+            break;
+        case "start":
+            //go to start screen
+            startView.classList.remove("hidden");
+            break;
+        case "question":
+            //go back to question
+            const questionView = document.querySelector("#question");
+            questionView.classList.remove("hidden");
+            //resume timer
+            break;
+        default:
+            //go back to start
+            startView.classList.remove("hidden");
+    }
 };
 
 const clearScore = function () {
     localStorage.clear();
+    highScoreListEl.innerHTML = "";
 };
 
+highScoreBtn.addEventListener("click", showHighScores);
 startBtn.addEventListener("click", startGame);
 initialsBtn.addEventListener("click", submitScore);
-restartBtn.addEventListener("click", restartGame);
+goBackBtn.addEventListener("click", goBack);
 clearScoreBtn.addEventListener("click", clearScore);
 
