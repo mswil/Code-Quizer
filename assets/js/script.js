@@ -16,9 +16,7 @@ const highScoreListEl = document.querySelector("#high-score-list");
 const goBackBtn = document.querySelector("#restart");
 const clearScoreBtn = document.querySelector("#clear-scores");
 
-console.log("created query selectors");
-
-let lastViewedScreen = "start";
+const timerEl = document.querySelector("#timer");
 
 const questions = [
     {
@@ -38,18 +36,38 @@ const questions = [
     }
 ];
 
-let currentQuestion = -1;
+let isPaused = false;
+let timeInterval = null;
 
-let userScore = 0;
+//initialized in setupGame()
+let lastViewedScreen;
+let currentQuestion;
+let userScore;
+let timeLeft;
+let pointsForCorrectAnswer;
+let timePenalty;
+
+const setupGame = function () {
+    lastViewedScreen = "start";
+
+    userScore = 0;
+    currentQuestion = -1;
+    timeLeft = 20;
+    timerEl.textContent = timeLeft;
+
+    pointsForCorrectAnswer = 10;
+    timePenalty = 10;
+};
 
 const startGame = function () {
     console.log("game started");
 
-    //initialize score to 0
-    userScore = 0;
+    //initialize score, question, and timer
+    setupGame();
 
-    currentQuestion = -1;
-
+    //start timer
+    countdown();
+    
     //hide instructions
     startView.classList.add("hidden");
 
@@ -62,12 +80,7 @@ const nextScreen = function () {
 
     lastViewedScreen = "question";
 
-    //get rid of old question
-    const oldQuestion = document.querySelector("#question");
-
-    if (oldQuestion) {
-        oldQuestion.remove();
-    }
+    removeQuestionEl();
 
     currentQuestion++;
     //end game if we are out of questions
@@ -104,6 +117,15 @@ const createQuestionEl = function (question) {
     return questionDiv;
 };
 
+const removeQuestionEl = function () {
+    //get rid of old question
+    const oldQuestion = document.querySelector("#question");
+
+    if (oldQuestion) {
+        oldQuestion.remove();
+    }
+};
+
 const createChoiceEl = function (choice, choiceIndex) {
     const choiceEl = document.createElement("button");
     choiceEl.setAttribute("type", "button");
@@ -118,19 +140,19 @@ const createChoiceEl = function (choice, choiceIndex) {
 };
 
 const selectedChoice = function (event) {
-    console.log("user chose" + event);
 
     const choiceIndex = +event.target.getAttribute("data-choice-index");
 
     if (choiceIndex === questions[currentQuestion].answerIndex) {
         console.log("good job");
-        //add 10 points to score
-        userScore += 10;
+        //add points to score
+        userScore += pointsForCorrectAnswer;
         //TODO display correct
     }
     else {
         console.log("try harder next time");
-        //TODO subtract from time
+        //subtract seconds from time
+        timeLeft -= timePenalty;
         //TODO display wrong
     }
 
@@ -139,13 +161,14 @@ const selectedChoice = function (event) {
 
 const endGame = function () {
     console.log("the game has ended");
-    //TODO stop countdown if haven't already
+    clearInterval(timeInterval);
     endView.classList.remove("hidden");
     headerEl.classList.add("invisable");
     userScoreEl.textContent = userScore;
 
     lastViewedScreen = "end";
 
+    console.log(timeInterval);
 };
 
 const submitScore = function () {
@@ -190,7 +213,7 @@ const showHighScores = function () {
             //hide question
             const questionView = document.querySelector("#question");
             questionView.classList.add("hidden");
-            //pause timer
+            isPaused = true;
             break;
         default:
     }
@@ -219,28 +242,18 @@ const goBack = function () {
     highScoreView.classList.add("hidden");
     headerEl.classList.remove("invisable");
 
-
-    //really only care if we came from question, otherwise go to start
     //which screen are we returning to
-    switch (lastViewedScreen) {
-        case "end":
-            //go to start screen
-            startView.classList.remove("hidden");
-            lastViewedScreen = "start";
-            break;
-        case "start":
-            //go to start screen
-            startView.classList.remove("hidden");
-            break;
-        case "question":
-            //go back to question
-            const questionView = document.querySelector("#question");
-            questionView.classList.remove("hidden");
-            //resume timer
-            break;
-        default:
-            //go back to start
-            startView.classList.remove("hidden");
+    if (lastViewedScreen === "question") {
+        //go back to question
+        const questionView = document.querySelector("#question");
+        questionView.classList.remove("hidden");
+        isPaused = false;
+    }
+    else {
+        //go to start screen
+        startView.classList.remove("hidden");
+
+        setupGame();
     }
 };
 
@@ -248,6 +261,24 @@ const clearScore = function () {
     localStorage.clear();
     highScoreListEl.innerHTML = "";
 };
+
+const countdown = function () {
+    timeInterval = setInterval(function () {
+        if (timeLeft > 0) {
+            if (!isPaused) {
+                timerEl.textContent = timeLeft;
+                timeLeft--;
+            }
+        }
+        else {
+            removeQuestionEl();
+            endGame();
+        }
+        console.log(timeLeft);
+    }, 1000);
+}
+
+setupGame();
 
 highScoreBtn.addEventListener("click", showHighScores);
 startBtn.addEventListener("click", startGame);
