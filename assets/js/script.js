@@ -4,6 +4,7 @@ const highScoreBtn = document.querySelector("#high-score-btn");
 
 const startView = document.querySelector("#start-view");
 const startBtn = document.querySelector("#start-btn");
+const timePenaltyEl = document.querySelector("#time-penalty");
 
 const questionView = document.querySelector("#question-view");
 const showResult = document.querySelector("#result");
@@ -24,19 +25,29 @@ const timerEl = document.querySelector("#timer");
 
 const questions = [
     {
-        questionText: "q1",
-        choices: ["1", "2", "3", "4"],
+        questionText: "Commonly used data types do NOT include:",
+        choices: ["strings", "booleans", "alerts", "numbers"],
         answerIndex: 2
     },
     {
-        questionText: "q2",
-        choices: ["1", "2", "3", "4"],
+        questionText: "The condition in an if / else statement is enclosed with _______.",
+        choices: ["quotes", "curly brackets", "parenthesis", "square brackets"],
+        answerIndex: 2
+    },
+    {
+        questionText: "Arrays in JavaScript can be used to store ______.",
+        choices: ["numbers and strings", "other arrays", "booleans", "all of the above"],
         answerIndex: 3
     },
     {
-        questionText: "q3",
-        choices: ["1", "2", "3", "4"],
-        answerIndex: 0
+        questionText: "String values must be enclosed within ___________ when being assigned to variables",
+        choices: ["commas", "curly brackets", "quotes", "parenthesis"],
+        answerIndex: 2
+    },
+    {
+        questionText: "A very useful tool used during development and debugging for printing content to the debugger is:",
+        choices: ["JavaScript", "terminal/bash", "for loops", "console.log"],
+        answerIndex: 3
     }
 ];
 
@@ -56,22 +67,23 @@ const setupGame = function () {
 
     userScore = 0;
     currentQuestion = -1;
-    timeLeft = 20;
+    timeLeft = 75;
     timerEl.textContent = timeLeft;
 
     pointsForCorrectAnswer = 10;
     timePenalty = 10;
+    timePenaltyEl.textContent = timePenalty;
 };
 
+//on clicking start button
 const startGame = function () {
-    console.log("game started");
 
     //initialize score, question, and timer
     setupGame();
 
     //start timer
-   // countdown();
-    
+    countdown();
+
     //hide instructions
     startView.classList.add("hidden");
 
@@ -80,7 +92,6 @@ const startGame = function () {
 };
 
 const nextScreen = function () {
-    console.log("next screen");
 
     lastViewedScreen = "question";
 
@@ -89,7 +100,6 @@ const nextScreen = function () {
     currentQuestion++;
     //end game if we are out of questions
     if (!questions[currentQuestion]) {
-        console.log("END GAME");
         endGame();
         return;
     }
@@ -145,13 +155,13 @@ const createChoiceEl = function (choice, choiceIndex) {
     return choiceEl;
 };
 
+//on clicking a choice button
 const selectedAChoice = function (event) {
 
     const choiceIndex = +event.target.getAttribute("data-choice-index");
     showResult.classList.remove("hidden");
 
     if (choiceIndex === questions[currentQuestion].answerIndex) {
-        console.log("good job");
         //add points to score
         userScore += pointsForCorrectAnswer;
         //display correct
@@ -159,7 +169,6 @@ const selectedAChoice = function (event) {
         showCorrect.classList.remove("hidden");
     }
     else {
-        console.log("try harder next time");
         //subtract seconds from time
         timeLeft -= timePenalty;
         //display wrong
@@ -171,34 +180,49 @@ const selectedAChoice = function (event) {
 };
 
 const endGame = function () {
-    console.log("the game has ended");
+
+    //end timer
     clearInterval(timeInterval);
+
     endView.classList.remove("hidden");
-    headerEl.classList.add("invisable");
+    headerEl.classList.add("invisible");
+
+    //display score
+    if (timeLeft > 0 && userScore > 0) {
+        userScore += timeLeft;
+    }
     userScoreEl.textContent = userScore;
 
     lastViewedScreen = "end";
-
-    console.log(timeInterval);
 };
 
+//on clicking submit button
 const submitScore = function () {
-    saveScore();
-    userInitials.value = "";
-    showResult.classList.add("hidden");
-    showHighScores();
+    if (userInitials.value === "") {
+        alert("Please enter your initials!");
+    }
+    else {
+        saveScore();
+        showResult.classList.add("hidden");
+        showHighScores();
+    }
 };
 
 const saveScore = function () {
-    let highScores = loadScores();
+    const highScores = loadScores();
+
+    //create a score object for this session
     const scoreObj = {
         name: userInitials.value,
         score: userScore
     };
 
+    //add this session score to list of scores and save to local storage
     highScores.push(scoreObj);
     localStorage.setItem("highScores", JSON.stringify(highScores));
-    highScores = [];
+
+    //clear out input field for next user. Be kind rewind
+    userInitials.value = "";
 };
 
 const loadScores = function () {
@@ -217,21 +241,20 @@ const showHighScores = function () {
     switch (lastViewedScreen) {
         case "end":
             endView.classList.add("hidden");
-            headerEl.classList.remove("invisable");
+            headerEl.classList.remove("invisible");
             break;
         case "start":
             startView.classList.add("hidden");
             break;
         case "question":
             //hide question
-            const questionView = document.querySelector("#question");
             questionView.classList.add("hidden");
             isPaused = true;
             break;
         default:
     }
 
-    headerEl.classList.add("invisable");
+    headerEl.classList.add("invisible");
     highScoreView.classList.remove("hidden");
 
     let highScores = loadScores();
@@ -249,16 +272,16 @@ const showHighScores = function () {
     }
 };
 
+//on clicking go back button
 const goBack = function () {
 
     highScoreListEl.innerHTML = "";
     highScoreView.classList.add("hidden");
-    headerEl.classList.remove("invisable");
+    headerEl.classList.remove("invisible");
 
     //which screen are we returning to
     if (lastViewedScreen === "question") {
         //go back to question
-        const questionView = document.querySelector("#question");
         questionView.classList.remove("hidden");
         isPaused = false;
     }
@@ -270,6 +293,7 @@ const goBack = function () {
     }
 };
 
+//on clicking clear high score button
 const clearScore = function () {
     localStorage.clear();
     highScoreListEl.innerHTML = "";
@@ -287,7 +311,6 @@ const countdown = function () {
             removeQuestionEl();
             endGame();
         }
-        console.log(timeLeft);
     }, 1000);
 }
 

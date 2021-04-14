@@ -11,7 +11,6 @@
 
 <body>
     <header>
-        <!-- TODO handle viewing the high scores -->
         <button type="button" id="high-score-btn" class="button high-score">View high scores</button>
         <span>Time: <span id="timer"></span></span>
     </header>
@@ -20,7 +19,7 @@
         <div id="start-view" class="start-view">
             <h1>Coding Quiz Challenge</h1>
             <p>Try to answer the following code-related questions withing the time limit. Keep in mind that incorrect
-                answers will penalize your score/time by 10 seconds!</p>
+                answers will penalize your score/time by <span id="time-penalty">10</span> seconds!</p>
             <button type="button" id="start-btn" class="button start">Start Quiz</button>
         </div>
 
@@ -58,11 +57,3 @@
 
 </html>
 
-<!--question layout 
-    <div>
-    <h1>question 1</h1>
-    <button type="button">choice 1</button>
-    <button type="button">choice 2</button>
-    <button type="button">choice 3</button>
-    <button type="button">choice 4</button>
-</div> -->
