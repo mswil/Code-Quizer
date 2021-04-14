@@ -1,10 +1,14 @@
-const mainEl = document.querySelector("main");
 const headerEl = document.querySelector("header");
 
 const highScoreBtn = document.querySelector("#high-score-btn");
 
 const startView = document.querySelector("#start-view");
 const startBtn = document.querySelector("#start-btn");
+
+const questionView = document.querySelector("#question-view");
+const showResult = document.querySelector("#result");
+const showWrong = document.querySelector("#wrong");
+const showCorrect = document.querySelector("#correct");
 
 const endView = document.querySelector("#end-view");
 const userScoreEl = document.querySelector("#user-score")
@@ -66,7 +70,7 @@ const startGame = function () {
     setupGame();
 
     //start timer
-    countdown();
+   // countdown();
     
     //hide instructions
     startView.classList.add("hidden");
@@ -92,7 +96,7 @@ const nextScreen = function () {
 
     //ask next question
     const newQuestion = createQuestionEl(questions[currentQuestion]);
-    mainEl.appendChild(newQuestion);
+    questionView.appendChild(newQuestion);
 
 };
 
@@ -101,6 +105,7 @@ const createQuestionEl = function (question) {
     //create div for question
     const questionDiv = document.createElement("div");
     questionDiv.setAttribute("id", "question")
+    questionDiv.classList.add("question");
 
     //create h1 which will contain the question
     const questionEl = document.createElement("h1");
@@ -129,31 +134,37 @@ const removeQuestionEl = function () {
 const createChoiceEl = function (choice, choiceIndex) {
     const choiceEl = document.createElement("button");
     choiceEl.setAttribute("type", "button");
+    choiceEl.className = "button choice";
     choiceEl.textContent = choice;
 
     //Keep track of what index this choice is so we can compare to the answerIndex later
     choiceEl.setAttribute("data-choice-index", choiceIndex);
 
-    choiceEl.addEventListener("click", selectedChoice);
+    choiceEl.addEventListener("click", selectedAChoice);
 
     return choiceEl;
 };
 
-const selectedChoice = function (event) {
+const selectedAChoice = function (event) {
 
     const choiceIndex = +event.target.getAttribute("data-choice-index");
+    showResult.classList.remove("hidden");
 
     if (choiceIndex === questions[currentQuestion].answerIndex) {
         console.log("good job");
         //add points to score
         userScore += pointsForCorrectAnswer;
-        //TODO display correct
+        //display correct
+        showWrong.classList.add("hidden");
+        showCorrect.classList.remove("hidden");
     }
     else {
         console.log("try harder next time");
         //subtract seconds from time
         timeLeft -= timePenalty;
-        //TODO display wrong
+        //display wrong
+        showWrong.classList.remove("hidden");
+        showCorrect.classList.add("hidden");
     }
 
     nextScreen();
@@ -173,6 +184,8 @@ const endGame = function () {
 
 const submitScore = function () {
     saveScore();
+    userInitials.value = "";
+    showResult.classList.add("hidden");
     showHighScores();
 };
 

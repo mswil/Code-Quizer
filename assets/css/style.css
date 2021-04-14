@@ -1,7 +1,96 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
+
+:root {
+  --primary: #351c75;
+  --secondary: #ca7eec;
+  --tertiary: #b6aad4;
+}
+
 .hidden {
-    display: none;
+  display: none;
 }
 
 .invisable {
-    visibility: hidden;
+  visibility: hidden;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.5rem;
+}
+
+main {
+    width: 700px;
+    margin: 0 auto;
+}
+
+.start-view {
+  text-align: center;
+}
+
+.button {
+  cursor: pointer;
+  outline: none;
+  border: none;
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 12px;
+  position: relative;
+  top: -3px;
+  box-shadow: 0 3px var(--grey);
+}
+
+.start,
+.choice,
+.submit,
+.go-back,
+.clear-score {
+  background: var(--primary);
+  font-size: 1.7rem;
+  color: white;
+}
+
+.start:hover,
+.choice:hover,
+.submit:hover,
+.go-back:hover,
+.clear-score:hover {
+  background: var(--secondary);
+}
+
+.high-score {
+  color: var(--secondary);
+  font-size: 1.5rem;
+}
+
+.high-score-list li:nth-child(2n-1) {
+    background-color: var(--tertiary);
+}
+
+li {
+    list-style-position: inside;
+    padding: 3px;
+}
+.question {
+    display: block;
+    flex-wrap: wrap;
+}
+
+.question button {
+    width: 250px;
+    margin: 10px;
+    display: block;
+    text-align: left;
+}
+
+.result h3{
+    color: gray;
+    font-style: italic;
+    font-weight: 100;
+    font-size: 30px;
+    margin-top: 15px;
 }

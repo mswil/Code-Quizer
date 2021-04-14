@@ -12,36 +12,44 @@
 <body>
     <header>
         <!-- TODO handle viewing the high scores -->
-        <button type="button" id="high-score-btn">View high scores</button>
+        <button type="button" id="high-score-btn" class="button high-score">View high scores</button>
         <span>Time: <span id="timer"></span></span>
     </header>
 
     <main>
-        <div id="start-view">
+        <div id="start-view" class="start-view">
             <h1>Coding Quiz Challenge</h1>
             <p>Try to answer the following code-related questions withing the time limit. Keep in mind that incorrect
                 answers will penalize your score/time by 10 seconds!</p>
-            <button type="button" id="start-btn">Start Quiz</button>
+            <button type="button" id="start-btn" class="button start">Start Quiz</button>
         </div>
+
+        <div id="question-view"></div>
 
         <div id="end-view" class="hidden">
             <h1>All done!</h1>
             <h2>Your final score is <span id="user-score"></span></h2>
 
             <label for="initials">Enter initials: </label>
-            <textarea id="initials" name="initials"></textarea>
-            <button type="button" id="initials-btn">Submit</button>
+            <input type="text" id="initials" name="initials"></input>
+            <button type="button" id="initials-btn" class="button submit">Submit</button>
         </div>
 
         <div id="high-score-view" class="hidden">
             <h1>High Scores</h1>
 
-            <ol id="high-score-list">
+            <ol id="high-score-list" class="high-score-list">
 
             </ol>
 
-            <button type="button" id="restart">Go back</button>
-            <button type="button" id="clear-scores">Clear high scores</button>
+            <button type="button" id="restart" class="button go-back">Go back</button>
+            <button type="button" id="clear-scores" class="button clear-score">Clear high scores</button>
+        </div>
+
+        <div id="result" class="hidden result">
+            <hr>
+            <h3 id="wrong">Wrong!</h3>
+            <h3 id="correct">Correct!</h3>
         </div>
     </main>
 
